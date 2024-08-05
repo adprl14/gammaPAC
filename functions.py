@@ -29,20 +29,6 @@ def buildRFourier(ph,K=1):
     RFull[:,2*K] = 1.0
     return RFull
 
-def jac(x,y,R):
-    T = y.size
-    grad = np.zeros((x.size,))
-    for i in range(T):
-        grad += -y[i]*R[i]*np.exp(-R[i]@x) + R[i]
-    return grad
-def hess(x,y,R):
-    T = y.size
-    H = np.zeros((x.size,x.size))
-    for i in range(T):
-        Rt = R[i]
-        H += y[i]*np.outer(Rt,Rt)*np.exp(-Rt.dot(x))
-    return H
-
 def objective(y,Rmtx,X, penalty):
     '''
     objective functions used for solving the GLM 
@@ -225,10 +211,10 @@ def calcDKL(y,coeffs,K,alpha = 1,ntheta = 18):
 def PACmeasure(high_amp,coeffs,K,alpha = 1):
     #pdata is P(data) = P(Y) = integral(P(y|theta)dtheta)
 
-    if np.min(high_amp) < 1e-4:
+    if np.min(high_amp) < 1e-2:
         minval = np.min(high_amp)
     else:
-        minval = 1e-4
+        minval = 1e-2
 
     maxval = np.percentile(high_amp,99.99)
 
@@ -263,34 +249,15 @@ def calc_gammaPAC(low_phase,high_amp,K=1,modelSelection = False,sMethod = 'MDL',
             AICpenalties = dims/m
             PNNLLsAIC = NNLLs+AICpenalties
             idx_min = np.argmin(PNNLLsAIC)
-        '''
-        BCarray = np.zeros((dims.size,))
-        for i in range(BCarray.shape[0]):
-        if i == 0:
-            if dims[i]==0:
-            BCarray[i] = 0
-            else:
-            BCarray[i] = 1/dims[i]
 
-        else:
-            BCarray[i] = 1/dims[i] + BCarray[i-1]
-
-        BCpenalties = np.max(dims)*BCarray/m
-        PNNLLsBC = NNLLs+BCpenalties
-        idx_min = np.argmin(PNNLLsBC)
-        '''
         optimal_K = Ks[idx_min]
         R = buildRFourier(low_phase,optimal_K)
         cvx_coeffs = Coeffs[idx_min]
     else:
         R = buildRFourier(low_phase,K)
         cvx_coeffs = modelFit(R,high_amp,penalty=penalty,solver = solver)
-        #alphastar, cvx_coeffs = modelFitJoint(R,high_amp)  #doesnt work
-        #cvx_coeffs = modelFitSM(R,high_amp)
         optimal_K = K
 
-    #print('optimal K: ', o0ptimal_K, '\noptimal coeffs: ',cvx_coeffs)
-    #print(f'{R}\n{cvx_coeffs}')
     alphastar = get_alphastar(high_amp,R,cvx_coeffs,method='sp')
     if np.isnan(alphastar):
         alphastar = get_alphastar(high_amp,R,cvx_coeffs,method='line')

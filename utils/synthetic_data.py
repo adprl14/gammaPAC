@@ -101,3 +101,18 @@ def generate_ramp(time,period):
     rampfunc = np.hstack((rampfunc,zero_array))
     rampfunc = np.hstack((rampfunc,sig[i*N:(i+1)*N]))
   return rampfunc
+
+
+def simulateERPACdata(time,f_low=5,f_high=40,ctype="square",period = 1,n_trials=100,noise_var=0.1):
+  data = np.zeros((n_trials,time.size))
+  if ctype == "square":
+    cc_time_series = 1-(sp.signal.square(time*np.pi/period,0.5)+1)/2
+  else:
+    cc_time_series = 1-(sp.signal.square(time*np.pi/period,0.5)+1)/2
+    print('Invalid coupling type. Setting coupling type to square wave.')
+  for trial in range(n_trials):
+   sig = generate_time_varying_coupled_sig(time, flow=flow ,fhigh=fhigh,cc_time_series =  cc_time_series ,noise_var = noise_var)
+   roll_num = np.random.choice(np.arange(1,100,1))
+   sig = np.roll(sig,roll_num)
+   data[trial] = sig
+  return data
