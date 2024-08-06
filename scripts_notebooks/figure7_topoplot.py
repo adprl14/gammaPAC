@@ -145,7 +145,7 @@ subj_nums = [1,2]
 
 for subj_num in subj_nums:
     #find the string in subj_list that contains the 'patient'+subj_num
-    subj = [s for s in subj_list if 'patient'+str(subj_num) in s][0]
+    subj = [s for s in subj_list if 'subject'+str(subj_num) in s][0]
     dataDir = baseDir + exp + '/' + subj + '/'
     saveDir = dataDir + 'dataDeriv/'
     if not os.path.exists(saveDir):
@@ -175,9 +175,9 @@ for subj_num in subj_nums:
     n_surrogates = 5000
 
     MI_z_scores, MIsall,samples_all =  calc_MI_z_scored(dataEGG,dataEEG,fs,n_surrogates,downsample=True)
-    np.save(saveDir + f'{subj}_surrogateMIs_{methodAR}_{start}-{stop}min.npy',samples_all)
-    np.save(saveDir + f'{subj}_MI_z_scores_{methodAR}_{start}-{stop}.npy',MI_z_scores)
-    np.save(saveDir + f'{subj}_MI_{methodAR}_{start}-{stop}.npy',MIsall)
+    np.save(saveDir + f'{subj}_surrogateMIs.npy',samples_all)
+    np.save(saveDir + f'{subj}_MI_z_scores.npy',MI_z_scores)
+    np.save(saveDir + f'{subj}_MI.npy',MIsall)
     print(f'{subj} MI done!')
 
     pac_z_scores = np.zeros((dataEEG.shape[0]))
@@ -187,7 +187,7 @@ for subj_num in subj_nums:
     for ch in range(dataEEG.shape[0]):
         pac_z_scores[ch],pac_values[ch],surrogate_pacs[ch] = calc_PAC(dataEGG,dataEEG[ch],fs,[.03,.07],[8,12],n_surrogates,5)
 
-    np.save(saveDir + f'{subj}_surrogatePACs_{methodAR}_{start}-{stop}min.npy',surrogate_pacs)
-    np.save(saveDir + f'{subj}_PAC_z_scores_{methodAR}_{start}-{stop}.npy',pac_z_scores)
-    np.save(saveDir + f'{subj}_PAC_values_{methodAR}_{start}-{stop}.npy',pac_values)
+    np.save(saveDir + f'{subj}_surrogatePACs.npy',surrogate_pacs)
+    np.save(saveDir + f'{subj}_PAC_z_scores.npy',pac_z_scores)
+    np.save(saveDir + f'{subj}_PAC_values.npy',pac_values)
     print(f'{subj} PAC done!')
