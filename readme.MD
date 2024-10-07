@@ -1,4 +1,4 @@
-"A mutual information measure of phase-amplitude coupling using gamma generalized linear models" 
+## A mutual information measure of phase-amplitude coupling using gamma generalized linear models
 
 This repository contains code for the method described in "A mutual information measure of phase-amplitude coupling using gamma generalized linear models" as well as scripts/notebooks to generate the figures in the paper.
 
