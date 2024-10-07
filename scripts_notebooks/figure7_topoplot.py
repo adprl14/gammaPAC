@@ -16,8 +16,6 @@ try:
 except:
     num_cores = multiprocessing.cpu_count()
 
-num_cores = 12
-
 ####################################################
 ######## Functions for computing PAC ###############
 ####################################################
